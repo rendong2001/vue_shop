@@ -3,8 +3,8 @@
     <!-- 面包屑导航区域 -->
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
       <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 卡片视图区域 -->
     <el-card class="box-card">
@@ -36,7 +36,7 @@
               <el-button @click="showEditDialog(scope.row.id)" size="small" type="primary" icon="el-icon-edit" circle></el-button>
               <el-button @click="removeUserById(scope.row.id)" size="small" type="danger" icon="el-icon-delete" circle></el-button>
               <el-tooltip class="item" effect="light" content="分配角色" placement="top" :enterable="false" transition="none">
-                <el-button size="small" type="warning" icon="el-icon-setting" circle></el-button>
+                <el-button @click="showSetRoleDialog(scope.row)" size="small" type="warning" icon="el-icon-setting" circle></el-button>
               </el-tooltip>
             </div>
           </template>
@@ -47,7 +47,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryInfo.pagenum"
-        :page-sizes="[2, 4, 5, 10]"
+        :page-sizes="[5, 8, 10]"
         :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -93,6 +93,23 @@
         <el-button type="primary" @click="editUserInfo(editForm)">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 分配角色的对话框 -->
+    <el-dialog title="分配角色" :visible.sync="setRoleDialogVisiable" width="50%" @close="setRoleDialogClosed">
+      <div>
+        <p>当前用户：{{ userInfo.username }}</p>
+        <p>当前角色：{{ userInfo.role_name }}</p>
+        <p>
+          分配新的角色：
+          <el-select v-model="selectedRoleId" placeholder="请选择">
+            <el-option v-for="item in rolesList" :key="item.id" :label="item.roleName" :value="item.id"> </el-option>
+          </el-select>
+        </p>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisiable = false">取 消</el-button>
+        <el-button type="primary" @click="commitRoles">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -121,7 +138,7 @@ export default {
       queryInfo: {
         query: '', //查询参数
         pagenum: 1, //当前页码
-        pagesize: 4 //每页显示的条目
+        pagesize: 8 //每页显示的条目
       },
       userList: [], //用户数据列表
       total: 0, //总条数
@@ -161,11 +178,16 @@ export default {
           { required: true, message: '请输入手机', trigger: 'blur' },
           { validator: validateMobile, trigger: 'blur' }
         ]
-      } //编辑用户的验证规则对象
+      }, //编辑用户的验证规则对象
+      setRoleDialogVisiable: false, //分配角色的对话框
+      userInfo: {}, //当前行的信息对象
+      rolesList: [], //角色列表
+      selectedRoleId: '' //选择器选中的选项id
     }
   },
   created() {
     this.getUserList()
+    this.getRolesList()
   },
   methods: {
     async getUserList() {
@@ -263,6 +285,35 @@ export default {
       this.getUserList()
       //消息提示刷新
       this.$message.success('删除用户成功')
+    },
+    //分配角色的对话框显示
+    showSetRoleDialog(row) {
+      this.userInfo = row
+      this.setRoleDialogVisiable = true
+    },
+    //获取角色列表
+    async getRolesList() {
+      const { data: res } = await this.$http.get('/roles')
+      console.log(res)
+      if (res.meta.status !== 200) return this.$message.error('获取角色列表失败')
+      this.rolesList = res.data
+      console.log(this.rolesList)
+    },
+    // 编辑后角色确定提交
+    async commitRoles() {
+      if (!this.selectedRoleId) {
+        return this.$message.error('请选择要分配的角色')
+      }
+      const { data: res } = await this.$http.put(`users/${this.userInfo.id}/role`, { rid: this.selectedRoleId })
+      if (res.meta.status !== 200) return this.$message.error('更新用户角色失败')
+      this.$message.success('更新用户角色成功')
+      this.getUserList()
+      this.setRoleDialogVisiable = false
+    },
+    //分配角色对话框关闭的事件
+    setRoleDialogClosed() {
+      this.userInfo = {}
+      this.selectedRoleId = ''
     }
   }
 }
