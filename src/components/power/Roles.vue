@@ -47,7 +47,7 @@
           <template slot-scope="scope">
             <el-button size="small" type="primary" icon="el-icon-edit">编辑</el-button>
             <el-button size="small" type="danger" icon="el-icon-delete">删除</el-button>
-            <el-button size="small" type="warning" icon="el-icon-setting" @click="showSeRighttDialog(scope.row)">分配角色</el-button>
+            <el-button size="small" type="warning" icon="el-icon-setting" @click="showSeRighttDialog(scope.row)">分配权限</el-button>
           </template>
         </el-table-column>
       </el-table>
