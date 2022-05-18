@@ -12,8 +12,6 @@
 
 ![user2](./notes/images/user2.jpg)
 
-![user1](./notes/images/user.jpg)
-
 ![role](./notes/images/power.jpg)
 
 ![power1](./notes/images/power1.jpg)
