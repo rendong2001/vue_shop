@@ -20,6 +20,12 @@
 
 ![goodsList](./notes/images/goods.jpg)
 
+![goods3](./notes/images/goods3.jpg)
+
+![goods4](./notes/images/goods4.jpg)
+
+
+
 ![goods1](./notes/images/goods1.jpg)
 
 ![goods2](./notes/images/goods2.jpg)
