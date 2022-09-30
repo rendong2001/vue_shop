@@ -9,7 +9,7 @@
 - [VS Code](https://code.visualstudio.com/)
 
 ## 目录
-- notes 项目笔记及接口文档
+- notes  项目笔记及接口文档
 - vue_api_server 项目后端服务
 - src
   - assets 静态资源
